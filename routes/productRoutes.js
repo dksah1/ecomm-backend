@@ -6,12 +6,19 @@ import CheckId from "../middlewares/checkId.js";
 import {
   addProduct,
   updateProductDetails,
+  fetchProducts,
+  fetchProductById,
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
-router.route("/").post(authenticate, authorizeAdmin, formidable(), addProduct);
+router
+  .route("/")
+  .get(fetchProducts)
+  .post(authenticate, authorizeAdmin, formidable(), addProduct);
 router
   .route("/:id")
+  .get(fetchProductById)
   .put(authenticate, authorizeAdmin, formidable(), updateProductDetails);
+
 export default router;
