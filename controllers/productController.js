@@ -1,5 +1,6 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
+import mongoose from "mongoose";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
@@ -97,6 +98,10 @@ const fetchProducts = asyncHandler(async (req, res) => {
 });
 
 const fetchProductById = asyncHandler(async (req, res) => {
+  // Check if the provided id is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: "Invalid product ID" });
+  }
   try {
     const product = await Product.findById(req.params.id);
     if (product) {
@@ -111,4 +116,24 @@ const fetchProductById = asyncHandler(async (req, res) => {
   }
 });
 
-export { addProduct, updateProductDetails, fetchProducts, fetchProductById };
+const fetchAllProducts = asyncHandler(async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .populate("category")
+      .limit(12)
+      .sort({ createAt: -1 });
+
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
+export {
+  addProduct,
+  updateProductDetails,
+  fetchProducts,
+  fetchProductById,
+  fetchAllProducts,
+};

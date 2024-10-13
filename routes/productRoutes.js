@@ -8,6 +8,7 @@ import {
   updateProductDetails,
   fetchProducts,
   fetchProductById,
+  fetchAllProducts,
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -21,4 +22,5 @@ router
   .get(fetchProductById)
   .put(authenticate, authorizeAdmin, formidable(), updateProductDetails);
 
+router.route("/allproducts").get(fetchAllProducts);
 export default router;
