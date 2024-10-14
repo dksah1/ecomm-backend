@@ -20,8 +20,4 @@ app.use("/api/users", userRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/products", productRoutes);
 
-// app.get("/", (req, res) => {
-//   res.send("Hello world");
-// });
-
 app.listen(port, () => console.log(`Server is running on port :${port}`));
