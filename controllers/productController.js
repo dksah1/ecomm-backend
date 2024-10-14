@@ -176,6 +176,16 @@ const fetchTopProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const fetchNewProduct = asyncHandler(async (req, res) => {
+  try {
+    const products = await Product.find({}).sort({ _id: -1 }).limit(5);
+    res.json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+});
+
 export {
   addProduct,
   updateProductDetails,
@@ -184,4 +194,5 @@ export {
   fetchAllProducts,
   addProductReview,
   fetchTopProduct,
+  fetchNewProduct,
 };
