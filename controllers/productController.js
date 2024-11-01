@@ -5,8 +5,6 @@ import mongoose from "mongoose";
 const addProduct = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
-    // console.log({ name, description, price, category, quantity, brand });
-    // validation
     switch (true) {
       case !name:
         return res.json({ error: "Name is required" });
@@ -39,14 +37,18 @@ const addProduct = asyncHandler(async (req, res) => {
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
     const { name, description, price, category, quantity, brand } = req.fields;
-    // console.log({ name, description, price, category, quantity, brand });
-    // validation
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID format" });
+    }
+
     switch (true) {
       case !name:
         return res.json({ error: "Name is required" });
 
       case !brand:
-        return res.json({ error: "brand is required" });
+        return res.json({ error: "Brand is required" });
 
       case !description:
         return res.json({ error: "Description is required" });
@@ -60,18 +62,23 @@ const updateProductDetails = asyncHandler(async (req, res) => {
       case !quantity:
         return res.json({ error: "Quantity is required" });
     }
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       { ...req.fields },
       { new: true }
     );
 
-    await product.save;
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const productIdString = product._id.toString();
 
     res.json(product);
   } catch (error) {
     console.log(error);
-    res.status(400).json(error.message);
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -100,11 +107,12 @@ const fetchProducts = asyncHandler(async (req, res) => {
 const fetchProductById = asyncHandler(async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+
     if (product) {
       return res.status(200).json(product);
     } else {
       res.status(404);
-      throw new Error("Product not found");
+      throw new Error("product not found");
     }
   } catch (error) {
     console.log(error);
